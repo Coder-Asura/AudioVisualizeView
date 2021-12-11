@@ -8,4 +8,5 @@ package com.zjy.audiovisualize.media;
 public interface MediaManagerListener {
 
     void onPrepare();
+    void onComplete();
 }

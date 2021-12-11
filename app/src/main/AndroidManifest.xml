@@ -6,6 +6,7 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
@@ -17,12 +18,12 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ReflectVisualizeActivity"/>
-        <activity android:name=".CircleVisualizeActivity"/>
-        <activity android:name=".SingleVisualizeActivity"/>
-        <activity android:name=".WaveVisualizeActivity"/>
-        <activity android:name=".NetVisualizeActivity"/>
-        <activity android:name=".GrainVisualizeActivity"/>
+        <activity android:name=".ReflectVisualizeActivity" />
+        <activity android:name=".CircleVisualizeActivity" />
+        <activity android:name=".SingleVisualizeActivity" />
+        <activity android:name=".WaveVisualizeActivity" />
+        <activity android:name=".NetVisualizeActivity" />
+        <activity android:name=".GrainVisualizeActivity" />
     </application>
 
 </manifest>

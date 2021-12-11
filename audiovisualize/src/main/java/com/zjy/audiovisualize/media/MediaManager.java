@@ -31,6 +31,7 @@ public class MediaManager {
      * @param raw res id of audio
      */
     public void doPlay(final int raw) {
+        release();
         try {
             mediaPlayer = MediaPlayer.create(mContext, raw);
             if (mediaPlayer == null) {
@@ -47,6 +48,15 @@ public class MediaManager {
                     }
                 }
             });
+            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    if (mListener != null) {
+                        mListener.onComplete();
+                    }
+                }
+            });
+            mediaPlayer.setLooping(false);
             mediaPlayer.start();
         } catch (Exception e) {
             LogUtils.d(e.getMessage());
@@ -72,6 +82,14 @@ public class MediaManager {
                 public void onPrepared(MediaPlayer mediaPlayer) {
                     if (mListener != null) {
                         mListener.onPrepare();
+                    }
+                }
+            });
+            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    if (mListener != null) {
+                        mListener.onComplete();
                     }
                 }
             });

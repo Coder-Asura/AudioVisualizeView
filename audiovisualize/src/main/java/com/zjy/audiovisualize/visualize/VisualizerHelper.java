@@ -2,6 +2,10 @@ package com.zjy.audiovisualize.visualize;
 
 import android.media.audiofx.Visualizer;
 
+import com.elvishew.xlog.XLog;
+
+import java.util.Arrays;
+
 /**
  * Date: 2020/11/24
  * Author: Yang
@@ -28,27 +32,29 @@ public class VisualizerHelper {
      * @param audioSessionId of the media to be visualised
      */
     public void setAudioSessionId(int audioSessionId) {
-        if (mVisualizer != null)
+        if (mVisualizer != null) {
             release();
+        }
 
         mVisualizer = new Visualizer(audioSessionId);
+        mVisualizer.setEnabled(false);
         mVisualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
-
         mVisualizer.setDataCaptureListener(new Visualizer.OnDataCaptureListener() {
             @Override
             public void onWaveFormDataCapture(Visualizer visualizer, byte[] bytes,
                                               int samplingRate) {
+                XLog.d("onWaveFormDataCapture " + samplingRate + " " + bytes.length + " " + Arrays.toString(bytes));
             }
 
             @Override
             public void onFftDataCapture(Visualizer visualizer, byte[] fft,
                                          int samplingRate) {
+                XLog.d("onFftDataCapture " + samplingRate + " " + fft.length + " " + Arrays.toString(fft));
                 float[] model = new float[fft.length / 2 + 1];
                 model[0] = (float) Math.abs(fft[1]);
                 int j = 1;
 
-                for (int i = 2; i < mCount *2;) {
-
+                for (int i = 2; i < mCount * 2; ) {
                     model[j] = (float) Math.hypot(fft[i], fft[i + 1]);
                     i += 2;
                     j++;
@@ -67,7 +73,9 @@ public class VisualizerHelper {
      * Releases the visualizer
      */
     public void release() {
-        if (mVisualizer != null)
+        if (mVisualizer != null) {
+            mVisualizer.setEnabled(false);
             mVisualizer.release();
+        }
     }
 }

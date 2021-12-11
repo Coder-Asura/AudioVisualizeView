@@ -27,6 +27,10 @@ import com.zjy.audiovisualize.visualize.VisualizerHelper;
  * Describe: a view for visualizing audio, showing spectrum with different ui mode
  */
 public abstract class AudioVisualizeView extends View implements MediaManagerListener, VisualizeCallback {
+    @Override
+    public void onComplete() {
+
+    }
 
     /**
      * the count of spectrum
