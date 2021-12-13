@@ -6,6 +6,7 @@ import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.elvishew.xlog.XLog;
 import com.zjy.audiovisualize.view.AudioVisualizeView;
 
 public class SingleVisualizeActivity extends AppCompatActivity {
@@ -33,6 +34,7 @@ public class SingleVisualizeActivity extends AppCompatActivity {
                 vAudioVisualize.doPlay(array[index]);
             }
         });
+        XLog.d("start play!");
         vAudioVisualize.doPlay(array[index]);
     }
 

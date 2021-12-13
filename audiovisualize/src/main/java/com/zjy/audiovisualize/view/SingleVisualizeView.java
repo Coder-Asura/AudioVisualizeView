@@ -1,5 +1,8 @@
 package com.zjy.audiovisualize.view;
 
+import static com.zjy.audiovisualize.constants.VisualizeMode.HORIZONTAL_LINE_BOTTOM;
+import static com.zjy.audiovisualize.constants.VisualizeMode.HORIZONTAL_LINE_TOP;
+
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -9,10 +12,8 @@ import android.util.AttributeSet;
 
 import androidx.annotation.Nullable;
 
+import com.elvishew.xlog.XLog;
 import com.zjy.audiovisualize.R;
-
-import static com.zjy.audiovisualize.constants.VisualizeMode.HORIZONTAL_LINE_BOTTOM;
-import static com.zjy.audiovisualize.constants.VisualizeMode.HORIZONTAL_LINE_TOP;
 
 import java.util.Arrays;
 
@@ -43,34 +44,28 @@ public class SingleVisualizeView extends AudioVisualizeView {
         mOrientation = typedArray.getInteger(R.styleable.AudioVisualizeView_visualize_orientation, HORIZONTAL_LINE_TOP);
     }
 
-    float scale = 0f;
-
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        scale = (h - 50) / 256;
     }
 
     @Override
     protected void drawChild(Canvas canvas) {
+        int step = mRawAudioBytes.length / mSpectrumCount;
         mStrokeWidth = (mRect.width() - (mSpectrumCount - 1) * mItemMargin) / mSpectrumCount * 1.0f;
         mPaint.setStrokeWidth(mStrokeWidth);
         mPaint.setStyle(Paint.Style.FILL);
-        Arrays.sort(mRawAudioBytes);
-        float max = findMax(mRawAudioBytes);
-        for (int i = 0; i < mSpectrumCount; i++) {
+        //        Arrays.sort(mRawAudioBytes);
+        XLog.d("drawChild " + Arrays.toString(mRawAudioBytes));
+        for (int i = 0, j = 0; j < mRawAudioBytes.length; j += step, i++) {
             switch (mOrientation) {
                 case HORIZONTAL_LINE_TOP:
-                    mPaint.setColor(Color.HSVToColor(new float[]{mRawAudioBytes[i] * (360 / max), 1, 1}));
-                    //                    canvas.drawLine(mRect.width() * i / mSpectrumCount,
-                    //                            mRect.height() / 2,
-                    //                            mRect.width() * i / mSpectrumCount,
-                    //                            2 + mRect.height() / 2 - mRawAudioBytes[i],
-                    //                            mPaint);
-                    canvas.drawLine((mStrokeWidth + mItemMargin) * i,
+                    int color = Color.HSVToColor(new float[]{mRawAudioBytes[j] * 360 / 80.3136f, 1, 1});
+                    mPaint.setColor(color);
+                    canvas.drawLine(mRect.width() * i / mSpectrumCount,
                             mRect.height() / 2,
-                            (mStrokeWidth + mItemMargin) * i,
-                            2 + mRect.height() / 2 - 300,
+                            mRect.width() * i / mSpectrumCount,
+                            2 + mRect.height() / 2 - mRawAudioBytes[j] * 5,
                             mPaint);
                     break;
                 case HORIZONTAL_LINE_BOTTOM:
@@ -86,19 +81,10 @@ public class SingleVisualizeView extends AudioVisualizeView {
         }
     }
 
-    private float findMax(float[] mRawAudioBytes) {
-        float max = mRawAudioBytes[0];
-        for (float mRawAudioByte : mRawAudioBytes) {
-            if (max < mRawAudioByte) {
-                max = mRawAudioByte;
-            }
-        }
-        return max;
-    }
-
     @Override
     public void onComplete() {
         super.onComplete();
+        visualizerHelper.printMax();
         visualizerHelper.release();
     }
 }

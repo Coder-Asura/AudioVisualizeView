@@ -26,6 +26,10 @@ public class VisualizerHelper {
         mCallback = callback;
     }
 
+    int index = 0;
+    float[] maxB;
+    boolean printHz = false;
+
     /**
      * Sets the audio session id for the currently playing audio
      *
@@ -39,6 +43,8 @@ public class VisualizerHelper {
         mVisualizer = new Visualizer(audioSessionId);
         mVisualizer.setEnabled(false);
         mVisualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
+        index = 0;
+        maxB = new float[513];
         mVisualizer.setDataCaptureListener(new Visualizer.OnDataCaptureListener() {
             @Override
             public void onWaveFormDataCapture(Visualizer visualizer, byte[] bytes,
@@ -47,26 +53,44 @@ public class VisualizerHelper {
             }
 
             @Override
-            public void onFftDataCapture(Visualizer visualizer, byte[] fft,
+            public void onFftDataCapture(Visualizer visualizer, byte[] ffts,
                                          int samplingRate) {
-                XLog.d("onFftDataCapture " + samplingRate + " " + fft.length + " " + Arrays.toString(fft));
-                float[] model = new float[fft.length / 2 + 1];
-                model[0] = (float) Math.abs(fft[1]);
-                int j = 1;
-
-                for (int i = 2; i < mCount * 2; ) {
-                    model[j] = (float) Math.hypot(fft[i], fft[i + 1]);
-                    i += 2;
-                    j++;
-                    model[j] = Math.abs(model[j]);
+                XLog.d("onFftDataCapture index=" + index + " " + samplingRate + " " + ffts.length + " " + Arrays.toString(ffts));
+//                https://blog.csdn.net/gkw421178132/article/details/71081628
+                //   直流      实部 虚部      频率范围 0-采样率/2 getSamplingRate()
+                //    0    1    2    3    4    5       n-2       n-1        n=getCaptureSize()
+                //    R0  Rn/2 R1   L1    R2   L2    R(n-1)/2  L(n-1)/2
+                //   k次频率 = getSamplingRate() * k / (n/2)                   int getFft (byte[] fft)
+                int frequencyCounts = ffts.length / 2 + 1; //  =513
+                float frequencyEach = samplingRate / visualizer.getCaptureSize();  //86132  samplingRate=44,100,000 mHz  getCaptureSize()=1024
+                float[] fft = new float[frequencyCounts];    //  (n-2)/2+2 = n/2+1  容量 = getCaptureSize()/2+
+                float[] hz = new float[frequencyCounts];    //  (n-2)/2+2 = n/2+1  容量 = getCaptureSize()/2+
+                fft[0] = Math.abs(ffts[0]);
+                hz[0] = 0;
+                for (int i = 1; i < frequencyCounts - 1; i++) {
+                    fft[i] = (float) Math.hypot(ffts[2 * i], ffts[2 * i + 1]);
+                    hz[i] = frequencyEach * i;
                 }
+                fft[frequencyCounts - 1] = Math.abs(ffts[1]);
+                hz[frequencyCounts - 1] = frequencyEach * (frequencyCounts - 1);
+                XLog.d("fft index=" + index + " " + fft.length + " max=" + findMax(fft) + " " + Arrays.toString(fft));
+                if (!printHz) {
+                    XLog.d("hz index=" + index + " " + hz.length + " " + Arrays.toString(hz));
+                    printHz = true;
+                }
+                maxB[index] = findMax(fft);
+                index++;
                 if (mCallback != null) {
-                    mCallback.onFftDataCapture(model);
+                    mCallback.onFftDataCapture(fft);
                 }
             }
         }, Visualizer.getMaxCaptureRate() / 2, false, true);
 
         mVisualizer.setEnabled(true);
+    }
+
+    public void printMax() {
+        XLog.d("printMax " + findMax(maxB));
     }
 
     /**
@@ -76,6 +100,17 @@ public class VisualizerHelper {
         if (mVisualizer != null) {
             mVisualizer.setEnabled(false);
             mVisualizer.release();
+            mVisualizer = null;
         }
+    }
+
+    private float findMax(float[] mRawAudioBytes) {
+        float max = mRawAudioBytes[0];
+        for (float mRawAudioByte : mRawAudioBytes) {
+            if (max < mRawAudioByte) {
+                max = mRawAudioByte;
+            }
+        }
+        return max;
     }
 }
