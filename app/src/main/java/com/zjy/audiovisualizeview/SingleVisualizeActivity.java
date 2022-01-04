@@ -13,7 +13,7 @@ public class SingleVisualizeActivity extends AppCompatActivity {
 
     private AudioVisualizeView vAudioVisualize;
     private Button btn_change_music;
-    private int index = 3;
+    private int index = 5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,7 +23,7 @@ public class SingleVisualizeActivity extends AppCompatActivity {
         vAudioVisualize = findViewById(R.id.audio_visualize_view);
         btn_change_music = findViewById(R.id.btn_change_music);
 
-        final int[] array = new int[]{R.raw.sound, R.raw.sound1, R.raw.sound2, R.raw.sound3};
+        final int[] array = new int[]{R.raw.sound, R.raw.sound1, R.raw.sound2, R.raw.sound3, R.raw.sound4, R.raw.sound5};
         btn_change_music.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

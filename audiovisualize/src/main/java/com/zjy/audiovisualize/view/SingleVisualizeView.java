@@ -56,7 +56,7 @@ public class SingleVisualizeView extends AudioVisualizeView {
         mPaint.setStrokeWidth(mStrokeWidth);
         mPaint.setStyle(Paint.Style.FILL);
         //        Arrays.sort(mRawAudioBytes);
-        XLog.d("drawChild " + Arrays.toString(mRawAudioBytes));
+//        XLog.d("drawChild " + Arrays.toString(mRawAudioBytes));
         for (int i = 0, j = 0; j < mRawAudioBytes.length; j += step, i++) {
             switch (mOrientation) {
                 case HORIZONTAL_LINE_TOP:
