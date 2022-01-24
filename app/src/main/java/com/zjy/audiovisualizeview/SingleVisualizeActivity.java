@@ -31,6 +31,7 @@ public class SingleVisualizeActivity extends AppCompatActivity {
                 if (index >= array.length) {
                     index = 0;
                 }
+                vAudioVisualize.release();
                 vAudioVisualize.doPlay(array[index]);
             }
         });

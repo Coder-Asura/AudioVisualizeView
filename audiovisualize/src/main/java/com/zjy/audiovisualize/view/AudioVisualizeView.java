@@ -29,7 +29,7 @@ import com.zjy.audiovisualize.visualize.VisualizerHelper;
 public abstract class AudioVisualizeView extends View implements MediaManagerListener, VisualizeCallback {
     @Override
     public void onComplete() {
-
+        visualizerHelper.release();
     }
 
     /**
